@@ -15,26 +15,44 @@ function QuestionForm(props) {
       ...formData,
       [event.target.name]: event.target.value,
     });
+    console.log(formData)
   }
+
+  // {
+  //   "formData": {
+  //     "prompt": "q",
+  //     "answer1": "1",
+  //     "answer2": "2",
+  //     "answer3": "3",
+  //     "answer4": "4",
+  //     "correctIndex": "1"
+  //   },
+  //   "id": 8
+  // }
 
   function handleSubmit(event) {
     event.preventDefault();
     console.log(formData);
-    let newQuestion = {
-      prompt: formData.prompt,
-      answers: [formData.answer1, formData.answer2, formData.answer3, formData.answer4],
-      correctIndex: formData.correctIndex
-    };
-    fetch(("http://localhost:4000/questions"), {
+    fetch("http://localhost:4000/questions",{
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newQuestion),
+      body: 
+        JSON.stringify({
+          prompt: formData.prompt,
+          answers: [
+            formData.answer1,
+            formData.answer2,
+            formData.answer3,
+            formData.answer4
+          ],
+          correctIndex: formData.correctIndex,
+        })
     })
-    .then((r)=>r.json())
-    }
-    
+    .then((res) => res.json())
+    .then((res) => console.log(res))
+  }
 
   return (
     <section>

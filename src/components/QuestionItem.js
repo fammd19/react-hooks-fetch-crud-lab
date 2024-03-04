@@ -1,6 +1,6 @@
 import React from "react";
 
-function QuestionItem({ question, handleDeleteClick, handleUpdateAnswer }) {
+function QuestionItem({ question, updateQuestions }) {
   const { id, prompt, answers, correctIndex } = question;
 
   const options = answers.map((answer, index) => (
@@ -9,23 +9,40 @@ function QuestionItem({ question, handleDeleteClick, handleUpdateAnswer }) {
     </option>
   ));
 
-  function deleteQuestion () {
-      handleDeleteClick(id)
-    }
-  
-    function updateAnswer(event) {
-      handleUpdateAnswer(id, parseInt(event.target.value))
-    }
+  function handleDelete () {
+    fetch(`http://localhost:4000/questions/${id}`,{
+      method: "DELETE"
+    })
+    .then((res) => res.json())
+    .then((res) => console.log(res))
+    updateQuestions()
+  }
+
+  function handleAnswerChange (event) {
+    let correctIndex = event.target.value;
+    console.log(event.target.value)
+    fetch(`http://localhost:4000/questions/${id}`,{
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: 
+        JSON.stringify({correctIndex})
+    })
+    .then((res) => res.json())
+    .then((res) => console.log(res))
+    updateQuestions()
+  }
 
   return (
-    <li key={id}>
+    <li>
       <h4>Question {id}</h4>
       <h5>Prompt: {prompt}</h5>
-      <label onChange={updateAnswer}>
+      <label>
         Correct Answer:
-        <select defaultValue={correctIndex}>{options}</select>
+        <select onChange={handleAnswerChange} defaultValue={correctIndex}>{options}</select>
       </label>
-      <button onClick={deleteQuestion}>Delete Question</button>
+      <button onClick={handleDelete}>Delete Question</button>
     </li>
   );
 }
